@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:wallet_tracket/view/home.dart';
+import 'package:wallet_tracket/view/welcomePage.dart';
+import 'package:wallet_tracket/view/authentication.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
 }
 
@@ -10,6 +13,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Flutter Demo', theme: ThemeData.dark(), home: Home());
+      title: 'Wallet Tracker',
+      theme: ThemeData.dark(),
+      routes: {
+        "/": (context) => Authentication(),
+        "/welcome": (context) => Welcome(),
+        "/home": (context) => Home(),
+      },
+    );
   }
 }

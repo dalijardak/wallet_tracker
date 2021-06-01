@@ -2,8 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:home_widget/home_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:wallet_tracket/config.dart';
+import 'package:wallet_tracket/sizeConfig.dart';
 import 'package:wallet_tracket/service/config.dart';
 import 'package:wallet_tracket/service/fetchData.dart';
 import 'package:intl/intl.dart';
@@ -16,15 +17,18 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  String _hash = "123456";
-  String _currency = "EUR";
+  String _hash;
+  String _currency;
   Timer timer;
-  DateTime lastUpdated = DateTime.now();
+  Timer updateTimer;
 
+  DateTime lastUpdated = DateTime.now();
+  DateTime now;
   TextEditingController _hashController = new TextEditingController();
 
   Future<dynamic> fetchData;
 
+  // Transaction card
   Widget transaction({String time, String amount, String currency}) {
     DateTime date = DateTime.fromMillisecondsSinceEpoch(int.parse(time));
 
@@ -37,19 +41,39 @@ class _HomeState extends State<Home> {
     );
   }
 
+  // Functions loaded on  widget
   @override
   void initState() {
     super.initState();
-    loadHash().then((value) => _hash = value);
-    loadCurrency().then((value) => _currency = value);
-    fetchData = getData(hash: _hash, currency: _currency);
+    now = DateTime.now();
 
-    timer = Timer.periodic(Duration(minutes: 15), (Timer t) {
-      print(t.tick);
-
+    loadHash().then((value) {
       setState(() {
-        lastUpdated = DateTime.now();
-        fetchData = getData(hash: _hash, currency: _currency);
+        _hashController.text = value;
+      });
+    });
+
+    loadCurrency().then((value) {
+      setState(() {
+        _currency = value;
+      });
+    });
+
+    fetchData = getData();
+
+    updateTimer = Timer.periodic(Duration(minutes: 1), (timer) {
+      setState(() {
+        now = DateTime.now();
+      });
+    });
+    timer = Timer.periodic(Duration(minutes: 15), (Timer t) {
+      HomeWidget.updateWidget(
+        name: 'ExampleAppWidgetProvider',
+        androidName: 'ExampleAppWidgetProvider',
+      );
+      setState(() {
+        now = DateTime.now();
+        fetchData = getData();
       });
     });
   }
@@ -59,6 +83,7 @@ class _HomeState extends State<Home> {
     _refreshController.dispose();
 
     timer?.cancel();
+    updateTimer?.cancel();
     super.dispose();
   }
 
@@ -67,11 +92,11 @@ class _HomeState extends State<Home> {
     Widget saveButton = TextButton(
       child: Text("Save"),
       onPressed: () {
-        saveConfig(hash: _hash, currency: _currency);
+        saveConfig(hash: _hashController.text, currency: _currency);
         setState(() {
-          _hash = _hashController.text;
-          fetchData = getData(hash: _hash, currency: _currency);
+          fetchData = getData();
         });
+
         Navigator.of(context).pop();
       },
     );
@@ -88,6 +113,22 @@ class _HomeState extends State<Home> {
             Text("Hash :"),
             TextFormField(
               controller: _hashController,
+              decoration: InputDecoration(
+                border: InputBorder.none,
+                hintText: _hash,
+                filled: true,
+                fillColor: Colors.grey,
+                contentPadding:
+                    const EdgeInsets.only(left: 14.0, bottom: 6.0, top: 8.0),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.red),
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
             ),
             Text("Currency :"),
             DropdownButtonFormField(
@@ -106,6 +147,22 @@ class _HomeState extends State<Home> {
                   child: Text(value),
                 );
               }).toList(),
+              decoration: InputDecoration(
+                border: InputBorder.none,
+                hintText: 'Hash',
+                filled: true,
+                fillColor: Colors.grey,
+                contentPadding:
+                    const EdgeInsets.only(left: 14.0, bottom: 6.0, top: 8.0),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.red),
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
             ),
           ],
         ),
@@ -131,8 +188,13 @@ class _HomeState extends State<Home> {
     // monitor network fetch
     await Future.delayed(Duration(milliseconds: 1000));
     // if failed,use refreshFailed()
+    HomeWidget.updateWidget(
+      name: 'ExampleAppWidgetProvider',
+      androidName: 'ExampleAppWidgetProvider',
+    );
     setState(() {
-      fetchData = getData(hash: "123456", currency: "EUR");
+      lastUpdated = DateTime.now();
+      fetchData = getData();
     });
     _refreshController.refreshCompleted();
   }
@@ -242,7 +304,7 @@ class _HomeState extends State<Home> {
                           child: Padding(
                             padding: EdgeInsets.only(right: 20),
                             child: Text(
-                              "Last updated ${DateTime.now().difference(lastUpdated).inMinutes} mins ago",
+                              "Last updated ${now.difference(lastUpdated).inMinutes} mins ago",
                               style: TextStyle(
                                 color: Colors.white70,
                                 fontSize: 12.0,

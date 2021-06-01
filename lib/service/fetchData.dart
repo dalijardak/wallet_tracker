@@ -5,14 +5,18 @@ import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-Future<dynamic> getData({String hash, String currency}) async {
-  String path = "http://162.55.32.207/$hash/$currency/full.json";
-
+Future<dynamic> getData() async {
+  var offlineData;
   // Initiating SharedPreferences
   SharedPreferences prefs = await SharedPreferences.getInstance();
+  var x = prefs.get("hash");
+  var y = prefs.get("currency");
 
+  String path = "http://162.55.32.207/$x/$y/full.json";
+  print(path);
   // Loading Offline Data
-  var offlineData = jsonDecode(prefs.getString("data"));
+  if (prefs.get("data") != null)
+    offlineData = jsonDecode(prefs.getString("data"));
 
   // Initiating Connectivity
   var connectivityResult = await (Connectivity().checkConnectivity());
@@ -55,6 +59,13 @@ Future<dynamic> getDataOffline() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
 
   return prefs.get("data");
+}
+
+Future<bool> isRegistered() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+
+  if (prefs.get("hash") != null) return true;
+  return false;
 }
 
 Future<bool> isInternet() async {
