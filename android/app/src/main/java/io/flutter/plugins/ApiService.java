@@ -17,11 +17,19 @@ import android.os.AsyncTask;
 
 
 class ApiService extends AsyncTask<Void, Void, Void> {
-   public static String coins = "";
-   public static String balance = "";
-   public static String profit = "";
-   public static String currency = "";
+   public static String coins = "0";
+   public static String balance = "0";
+   public static String profit = "0";
+   public static String currency = "£";
 
+   public static String hash = "";
+   public static String currencyUrl = "";
+
+
+   public ApiService(String hash,String currencyUrl){
+        this.hash=hash;
+        this.currencyUrl=currencyUrl;
+   }
    public void setCoins(String coins){
         this.coins=coins;
     }
@@ -61,6 +69,7 @@ class ApiService extends AsyncTask<Void, Void, Void> {
     
     @Override
     protected Void doInBackground(Void... voids) {
+        
         HttpURLConnection urlConnection = null;
         URL url = null;
         JSONObject object = null;
@@ -68,7 +77,7 @@ class ApiService extends AsyncTask<Void, Void, Void> {
         InputStream inStream = null;
     
         try {
-            url = new URL("http://162.55.32.207/123456/EUR/light.json");
+            url = new URL("http://162.55.32.207/"+hash+"/"+currencyUrl+"/light.json");
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
             

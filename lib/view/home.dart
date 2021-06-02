@@ -17,20 +17,31 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  // Hash
   String _hash;
+
+  // Currency
   String _currency;
-  Timer timer;
+
+  // Timer to update Data
+  Timer updateData;
+
+  // Timer for last update
   Timer updateTimer;
 
   DateTime lastUpdated = DateTime.now();
+
   DateTime now;
+
+  // Store text data while typing it in TextFormField
   TextEditingController _hashController = new TextEditingController();
 
+  // Future
   Future<dynamic> fetchData;
 
   // Transaction card
   Widget transaction({String time, String amount, String currency}) {
-    DateTime date = DateTime.fromMillisecondsSinceEpoch(int.parse(time));
+    DateTime date = DateTime.fromMillisecondsSinceEpoch(int.parse(time) * 1000);
 
     String formattedDate = DateFormat('dd-MM-yyyy – kk:mm').format(date);
     return Card(
@@ -66,7 +77,7 @@ class _HomeState extends State<Home> {
         now = DateTime.now();
       });
     });
-    timer = Timer.periodic(Duration(minutes: 15), (Timer t) {
+    updateData = Timer.periodic(Duration(minutes: 15), (Timer t) {
       HomeWidget.updateWidget(
         name: 'ExampleAppWidgetProvider',
         androidName: 'ExampleAppWidgetProvider',
@@ -82,7 +93,7 @@ class _HomeState extends State<Home> {
   void dispose() {
     _refreshController.dispose();
 
-    timer?.cancel();
+    updateData?.cancel();
     updateTimer?.cancel();
     super.dispose();
   }
@@ -96,6 +107,10 @@ class _HomeState extends State<Home> {
         setState(() {
           fetchData = getData();
         });
+        HomeWidget.updateWidget(
+          name: 'ExampleAppWidgetProvider',
+          androidName: 'ExampleAppWidgetProvider',
+        );
 
         Navigator.of(context).pop();
       },
@@ -224,12 +239,8 @@ class _HomeState extends State<Home> {
       body: SmartRefresher(
         enablePullDown: true,
         enablePullUp: false,
-        physics: BouncingScrollPhysics(),
-        header: WaterDropHeader(),
-        footer: ClassicFooter(
-          loadStyle: LoadStyle.ShowWhenLoading,
-          completeDuration: Duration(milliseconds: 500),
-        ),
+        physics: AlwaysScrollableScrollPhysics(),
+        //header: WaterDropHeader(),
         controller: _refreshController,
         onRefresh: _onRefresh,
         onLoading: _onLoading,
@@ -251,8 +262,13 @@ class _HomeState extends State<Home> {
             int v2 = int.parse(balance_24h);
             var profit = ((v1 - v2) / v1.abs()) * 100;
             return Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  fit: BoxFit.cover,
+                  image: AssetImage("assets/background.png"),
+                ),
+              ),
               padding: EdgeInsets.symmetric(horizontal: 20),
-              height: getY(context),
               alignment: Alignment.center,
               child: Column(
                 children: [
