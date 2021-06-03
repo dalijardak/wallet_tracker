@@ -12,10 +12,18 @@ class Welcome extends StatefulWidget {
 }
 
 class _WelcomeState extends State<Welcome> {
+  ///******************************  Declaring Variables ******************************///
+
+  // Store text data while typing it in TextFormField
   TextEditingController _hashController = new TextEditingController();
+
+  // Form Key
   final _formKey = GlobalKey<FormState>();
 
+  // Currency
   String _currency = "EUR";
+
+  ///******************************  Declaring Functions ******************************///
 
   void _validate() {
     if (_formKey.currentState.validate()) {
@@ -29,6 +37,8 @@ class _WelcomeState extends State<Welcome> {
       );
     }
   }
+
+  ///******************************  Main Widget ******************************///
 
   @override
   Widget build(BuildContext context) {

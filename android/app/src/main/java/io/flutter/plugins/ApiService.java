@@ -15,6 +15,7 @@ import org.json.JSONTokener;
 
 import android.os.AsyncTask;
 
+// This class loads data from the service and updates its attributes
 
 class ApiService extends AsyncTask<Void, Void, Void> {
    public static String coins = "0";
@@ -98,11 +99,10 @@ class ApiService extends AsyncTask<Void, Void, Void> {
             setCoins(data1);
             setBalance(data2);
             setCurrency(data3);
-            System.out.println(data4);
             float v1 = Float.parseFloat(data2);
             float v2 = Float.parseFloat(data4);
-            float v3 = (v1 - v2)*100/Math.abs(v1);
-           
+            // Calculating profit
+            float v3 = (v1 - v2)*100/Math.abs(v1);           
             setProfit(v3);
 
         } catch (Exception e) {

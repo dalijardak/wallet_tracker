@@ -1,3 +1,7 @@
+/// Redirect the user based on his registration
+/// If he is registered, he's directed to Home.
+/// If he is not, he's redirected to Welcome page.
+
 import 'package:flutter/material.dart';
 import 'package:wallet_tracket/service/fetchData.dart';
 import 'package:wallet_tracket/view/home.dart';

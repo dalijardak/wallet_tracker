@@ -2,7 +2,7 @@
     package="com.wallet_tracket.wallet_tracket">
      <uses-permission android:name="android.permission.INTERNET" />
    <application
-        android:label="wallet_tracket"
+        android:label="Wallet Tracker"
         android:usesCleartextTraffic="true"
         android:icon="@mipmap/ic_launcher">
         <activity

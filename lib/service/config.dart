@@ -1,3 +1,5 @@
+// Here we store our config (Hash,Currency) into Shared Preferences
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> saveConfig({String hash, String currency}) async {

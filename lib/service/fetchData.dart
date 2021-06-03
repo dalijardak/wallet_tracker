@@ -9,11 +9,11 @@ Future<dynamic> getData() async {
   var offlineData;
   // Initiating SharedPreferences
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  var x = prefs.get("hash");
-  var y = prefs.get("currency");
+  var hash = prefs.get("hash");
+  var currency = prefs.get("currency");
 
-  String path = "http://162.55.32.207/$x/$y/full.json";
-  print(path);
+  String path = "http://162.55.32.207/$hash/$currency/full.json";
+
   // Loading Offline Data
   if (prefs.get("data") != null)
     offlineData = jsonDecode(prefs.getString("data"));
@@ -55,41 +55,10 @@ Future<dynamic> getData() async {
   }
 }
 
-Future<dynamic> getDataOffline() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-
-  return prefs.get("data");
-}
-
+// Check wiether the user is registered or not
 Future<bool> isRegistered() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
 
   if (prefs.get("hash") != null) return true;
   return false;
-}
-
-Future<bool> isInternet() async {
-  var connectivityResult = await (Connectivity().checkConnectivity());
-  if (connectivityResult == ConnectivityResult.mobile) {
-    // I am connected to a mobile network, make sure there is actually a net connection.
-    if (await DataConnectionChecker().hasConnection) {
-      // Mobile data detected & internet connection confirmed.
-      return true;
-    } else {
-      // Mobile data detected but no internet connection found.
-      return false;
-    }
-  } else if (connectivityResult == ConnectivityResult.wifi) {
-    // I am connected to a WIFI network, make sure there is actually a net connection.
-    if (await DataConnectionChecker().hasConnection) {
-      // Wifi detected & internet connection confirmed.
-      return true;
-    } else {
-      // Wifi detected but no internet connection found.
-      return false;
-    }
-  } else {
-    // Neither mobile data or WIFI detected, not internet connection found.
-    return false;
-  }
 }

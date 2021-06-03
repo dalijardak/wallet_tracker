@@ -5,9 +5,9 @@
     android:minResizeWidth="70dp"
     android:minWidth="240dp"
     android:resizeMode="vertical|horizontal"
-    android:updatePeriodMillis="18000"
+    android:updatePeriodMillis="18000" 
     android:widgetCategory="home_screen"
     android:previewImage="@drawable/my_image">
     >
-
 </appwidget-provider>
+<!--App widget Infos-->

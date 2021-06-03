@@ -1,30 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
     android:gravity="center"
     android:background="@drawable/widget_background">
-
- 
-    <ImageView
+	<ImageView
          android:layout_width="100dp"
          android:layout_height="match_parent"
          android:adjustViewBounds="true"
          android:cropToPadding="true"
         android:layout_marginLeft="20dp"
          android:src="@drawable/my_image"/>
-   
-    
-
-    <LinearLayout 
+	<LinearLayout 
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
-
-     <ImageView
+		<ImageView
      android:id="@+id/button_id"
      android:layout_height="12dp"
      android:layout_width="12dp"
@@ -34,7 +27,7 @@
        android:layout_gravity="top|end"
      android:layout_marginLeft="100dp"
       />
-    <TextView
+		<TextView
       android:id="@+id/coins_id"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
@@ -45,8 +38,7 @@
       android:textAlignment="center"
       android:textColor="#FFFFFF"
       android:textSize="25dp"/>
-      
-       <TextView
+		<TextView
       android:id="@+id/profit_id"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
@@ -59,8 +51,7 @@
       android:textSize="10dp"
       android:textAlignment="center"
       android:textColor="#FFFFFF"/>
-     
-      <TextView
+		<TextView
       android:id="@+id/balance_id"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
@@ -72,31 +63,20 @@
       android:textSize="22dp"
       android:textAlignment="center"
       android:textColor="#FFFFFF"/>
-       
-
-      <TextView
+		<TextView
       android:id="@+id/dateTime_id"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-       android:layout_gravity="bottom|end"
+      android:layout_gravity="bottom|end"
       android:layout_marginRight="15dp"
-            android:layout_marginTop="5dp"
-
-            android:layout_marginBottom="3dp"
-
+      android:layout_marginTop="5dp"
+      android:layout_marginBottom="3dp"
       android:layout_weight="1" 
       android:text="Lest updated"
       android:textStyle="bold"
       android:textSize="10dp"
       android:textAlignment="center"
       android:textColor="#FFFFFF"/>
-
-      
-      
-
-    </LinearLayout>
-
-    
-
-     </LinearLayout>
+	</LinearLayout>
+</LinearLayout>
 

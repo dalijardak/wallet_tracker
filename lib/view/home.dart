@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:home_widget/home_widget.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:home_widget/home_widget.dart'; // Package used to update Home Screen Widget
+import 'package:pull_to_refresh/pull_to_refresh.dart'; // Pull to refresh data
 import 'package:wallet_tracket/sizeConfig.dart';
 import 'package:wallet_tracket/service/config.dart';
 import 'package:wallet_tracket/service/fetchData.dart';
@@ -17,6 +17,8 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  ///******************************  Declaring Variables ******************************///
+
   // Hash
   String _hash;
 
@@ -39,7 +41,12 @@ class _HomeState extends State<Home> {
   // Future
   Future<dynamic> fetchData;
 
-  // Transaction card
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
+
+  ///******************************  Declaring Widgets ******************************///
+
+  // Transaction card view
   Widget transaction({String time, String amount, String currency}) {
     DateTime date = DateTime.fromMillisecondsSinceEpoch(int.parse(time) * 1000);
 
@@ -52,66 +59,27 @@ class _HomeState extends State<Home> {
     );
   }
 
-  // Functions loaded on  widget
-  @override
-  void initState() {
-    super.initState();
-    now = DateTime.now();
-
-    loadHash().then((value) {
-      setState(() {
-        _hashController.text = value;
-      });
-    });
-
-    loadCurrency().then((value) {
-      setState(() {
-        _currency = value;
-      });
-    });
-
-    fetchData = getData();
-
-    updateTimer = Timer.periodic(Duration(minutes: 1), (timer) {
-      setState(() {
-        now = DateTime.now();
-      });
-    });
-    updateData = Timer.periodic(Duration(minutes: 15), (Timer t) {
-      HomeWidget.updateWidget(
-        name: 'ExampleAppWidgetProvider',
-        androidName: 'ExampleAppWidgetProvider',
-      );
-      setState(() {
-        now = DateTime.now();
-        fetchData = getData();
-      });
-    });
-  }
-
-  @override
-  void dispose() {
-    _refreshController.dispose();
-
-    updateData?.cancel();
-    updateTimer?.cancel();
-    super.dispose();
-  }
-
-  showAlertDialog(BuildContext context) {
+  // Settings Menu
+  showSettingsMenu(BuildContext context) {
     // Create button
     Widget saveButton = TextButton(
       child: Text("Save"),
       onPressed: () {
+        // Save data into SharedPreferences
         saveConfig(hash: _hashController.text, currency: _currency);
+
+        // Reload Data
         setState(() {
           fetchData = getData();
         });
+
+        // Update Home Screen Widget
         HomeWidget.updateWidget(
           name: 'ExampleAppWidgetProvider',
           androidName: 'ExampleAppWidgetProvider',
         );
 
+        // Dissmiss the Pop up dialog (Settings menu)
         Navigator.of(context).pop();
       },
     );
@@ -126,6 +94,8 @@ class _HomeState extends State<Home> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text("Hash :"),
+
+            // Data input
             TextFormField(
               controller: _hashController,
               decoration: InputDecoration(
@@ -153,6 +123,7 @@ class _HomeState extends State<Home> {
                   _currency = newValue;
                 });
               },
+              // Items to display (EUR and USD)
               items: <String>[
                 'EUR',
                 'USD',
@@ -164,7 +135,6 @@ class _HomeState extends State<Home> {
               }).toList(),
               decoration: InputDecoration(
                 border: InputBorder.none,
-                hintText: 'Hash',
                 filled: true,
                 fillColor: Colors.grey,
                 contentPadding:
@@ -183,11 +153,12 @@ class _HomeState extends State<Home> {
         ),
       ),
       actions: [
+        // Save Button
         saveButton,
       ],
     );
 
-    // show the dialog
+    // show the dialog (Settings Menu)
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -196,8 +167,62 @@ class _HomeState extends State<Home> {
     );
   }
 
-  RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
+  ///******************************  Initiating Variables ******************************///
+
+  @override
+  void initState() {
+    super.initState();
+
+    now = DateTime.now();
+
+    loadHash().then((value) {
+      setState(() {
+        _hashController.text = value;
+      });
+    });
+
+    loadCurrency().then((value) {
+      setState(() {
+        _currency = value;
+      });
+    });
+
+    // Fetching data from server
+    fetchData = getData();
+
+    // Update current time every 1 minute
+    updateTimer = Timer.periodic(Duration(minutes: 1), (timer) {
+      setState(() {
+        now = DateTime.now();
+      });
+    });
+
+    // Update Data and Home Screen Widget every 15 minutes
+    updateData = Timer.periodic(Duration(minutes: 15), (Timer t) {
+      // Update home Screen Widget
+      HomeWidget.updateWidget(
+        name: 'ExampleAppWidgetProvider',
+        androidName: 'ExampleAppWidgetProvider',
+      );
+
+      // Update data and current Time
+      setState(() {
+        now = DateTime.now();
+        fetchData = getData();
+      });
+    });
+  }
+
+  ///******************************  Dispose Variables ******************************///
+  @override
+  void dispose() {
+    _refreshController.dispose();
+    updateData?.cancel();
+    updateTimer?.cancel();
+    super.dispose();
+  }
+
+  ///******************************  Declaring Functions ******************************///
 
   void _onRefresh() async {
     // monitor network fetch
@@ -222,6 +247,8 @@ class _HomeState extends State<Home> {
     _refreshController.loadComplete();
   }
 
+  ///******************************  Main Widget ******************************///
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -232,7 +259,7 @@ class _HomeState extends State<Home> {
         actions: [
           IconButton(
             icon: Icon(Icons.settings),
-            onPressed: () => showAlertDialog(context),
+            onPressed: () => showSettingsMenu(context),
           )
         ],
       ),
@@ -240,7 +267,6 @@ class _HomeState extends State<Home> {
         enablePullDown: true,
         enablePullUp: false,
         physics: AlwaysScrollableScrollPhysics(),
-        //header: WaterDropHeader(),
         controller: _refreshController,
         onRefresh: _onRefresh,
         onLoading: _onLoading,
@@ -251,6 +277,7 @@ class _HomeState extends State<Home> {
               return Center(
                 child: Text("Loding ..."),
               );
+
             var balance = snapshot.data["balance"];
             var balance_24h = snapshot.data["balance_24h"];
             var coins = snapshot.data["coins"];
@@ -261,11 +288,13 @@ class _HomeState extends State<Home> {
             int v1 = int.parse(balance);
             int v2 = int.parse(balance_24h);
             var profit = ((v1 - v2) / v1.abs()) * 100;
+
             return Container(
               decoration: BoxDecoration(
                 image: DecorationImage(
                   fit: BoxFit.cover,
-                  image: AssetImage("assets/background.png"),
+                  image:
+                      AssetImage("assets/background.png"), // Background Image
                 ),
               ),
               padding: EdgeInsets.symmetric(horizontal: 20),

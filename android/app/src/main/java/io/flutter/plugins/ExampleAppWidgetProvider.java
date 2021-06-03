@@ -29,7 +29,6 @@ public class ExampleAppWidgetProvider extends AppWidgetProvider {
               this.onUpdate(context, AppWidgetManager.getInstance(context), appWidgetIds);
           }
       }
-
     }
   }
 
@@ -40,7 +39,6 @@ public class ExampleAppWidgetProvider extends AppWidgetProvider {
 }
 
 
-  // Detect button pressed action
   static private PendingIntent getPenIntent(Context context, int[] appWidgetIds) {
     Intent intent = new Intent(context, ExampleAppWidgetProvider.class);
     intent.setAction(REFRESH_ACTION);
@@ -48,19 +46,22 @@ public class ExampleAppWidgetProvider extends AppWidgetProvider {
     return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
   }
 
+  // Update the widget
   @Override
   public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
 
-    
+    // Loading data from Shared Preferences
     SharedPreferences prefs = context.getSharedPreferences("FlutterSharedPreferences", context.MODE_PRIVATE);
     String hash = prefs.getString("flutter.hash", "");
     String currencyUrl = prefs.getString("flutter.currency", "");
 
+    // Initiating the API service Class
     ApiService apiService = new ApiService(hash, currencyUrl);
 
     // Date and Time 
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm");
     LocalDateTime now = LocalDateTime.now();
+    
     // API CALL
     apiService.execute();
 
@@ -69,6 +70,7 @@ public class ExampleAppWidgetProvider extends AppWidgetProvider {
     RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.example_widget);
 
     
+    // Detect button press action
     views.setOnClickPendingIntent(R.id.button_id, getPenIntent(context,appWidgetIds));
 
     views.setTextViewText(R.id.coins_id, apiService.getCoins() + " BTC");
@@ -88,7 +90,6 @@ public class ExampleAppWidgetProvider extends AppWidgetProvider {
 
     for (int appWidgetId: appWidgetIds) {
       appWidgetManager.updateAppWidget(appWidgetId, views);
-
     }
   }
 }
