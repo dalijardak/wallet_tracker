@@ -1,4 +1,4 @@
-# wallet_tracker
+# Wallet Tracker
 
 A new Flutter project.
 
